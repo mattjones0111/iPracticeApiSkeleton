@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using iPractice.Api.Models;
@@ -10,11 +9,11 @@ namespace iPractice.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PsychologistController : ControllerBase
+    public class PsychologistsController : ControllerBase
     {
-        private readonly ILogger<PsychologistController> _logger;
+        private readonly ILogger _logger;
 
-        public PsychologistController(ILogger<PsychologistController> logger)
+        public PsychologistsController(ILogger<PsychologistsController> logger)
         {
             _logger = logger;
         }

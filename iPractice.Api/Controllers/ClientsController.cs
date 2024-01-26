@@ -10,11 +10,11 @@ namespace iPractice.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ClientController : ControllerBase
+    public class ClientsController : ControllerBase
     {
-        private readonly ILogger<ClientController> _logger;
+        private readonly ILogger _logger;
         
-        public ClientController(ILogger<ClientController> logger)
+        public ClientsController(ILogger<ClientsController> logger)
         {
             _logger = logger;
         }
