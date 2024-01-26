@@ -1,7 +1,5 @@
-﻿namespace iPractice.Api.Models
+﻿namespace iPractice.Api.Models;
+
+public class TimeSlot
 {
-    public class TimeSlot
-    {
-        
-    }
 }

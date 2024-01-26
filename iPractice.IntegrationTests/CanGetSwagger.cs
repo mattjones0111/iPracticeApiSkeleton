@@ -4,33 +4,32 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
-namespace iPractice.IntegrationTests
+namespace iPractice.IntegrationTests;
+
+public class CanGetSwagger
 {
-    public class CanGetSwagger
+    readonly HttpClient client;
+
+    public CanGetSwagger()
     {
-        readonly HttpClient client;
+        ApiFixture fixture = new();
+        client = fixture.CreateClient();
+    }
 
-        public CanGetSwagger()
+    [Fact]
+    public async Task Test()
+    {
+        var response = await client.GetAsync("/swagger");
+
+        Assert.Multiple(() =>
         {
-            ApiFixture fixture = new();
-            client = fixture.CreateClient();
-        }
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        [Fact]
-        public async Task Test()
-        {
-            var response = await client.GetAsync("/swagger");
+            var body = response.Content.ReadAsStringAsync()
+                .GetAwaiter()
+                .GetResult();
 
-            Assert.Multiple(() =>
-            {
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-                var body = response.Content.ReadAsStringAsync()
-                    .GetAwaiter()
-                    .GetResult();
-
-                body.Should().Contain("<div id=\"swagger-ui\">");
-            });
-        }
+            body.Should().Contain("<div id=\"swagger-ui\">");
+        });
     }
 }
