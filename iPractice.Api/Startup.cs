@@ -25,7 +25,7 @@ namespace iPractice.Api
                 swagger.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = " iPractice APIs"
+                    Title = "iPractice APIs"
                 });
             });
             
