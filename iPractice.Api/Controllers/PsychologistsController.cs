@@ -34,6 +34,8 @@ public class PsychologistsController : MediatorDispatcherController
     /// <returns>Ok if the availability was created</returns>
     [HttpPost("{psychologistId}/availability")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult> CreateAvailability(
         [FromRoute] long psychologistId,

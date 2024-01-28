@@ -8,7 +8,7 @@ namespace iPractice.IntegrationTests;
 [Collection("Api collection")]
 public class CanGetSwagger
 {
-    private readonly ApiFixture apiFixture;
+    readonly ApiFixture apiFixture;
 
     public CanGetSwagger(ApiFixture apiFixture)
     {

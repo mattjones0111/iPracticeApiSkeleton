@@ -1,9 +1,9 @@
-﻿using iPractice.Api.Models;
+﻿using iPractice.Contracts;
+using iPractice.Domain.Features.Client.Appointments;
 using iPractice.Domain.Features.Client.Timeslots;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -31,9 +31,10 @@ public class ClientsController : MediatorDispatcherController
     /// <returns>All time slots for the selected client</returns>
     [HttpGet("{clientId}/timeslots")]
     [ProducesResponseType(typeof(IEnumerable<TimeSlot>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetAvailableTimeSlots(long clientId)
     {
-        Get.Query q = new Get.Query { ClientId = clientId };
+        Get.Query q = new() { ClientId = clientId };
 
         return await DispatchAndRespondAsync(q);
     }
@@ -43,12 +44,24 @@ public class ClientsController : MediatorDispatcherController
     /// </summary>
     /// <param name="clientId">The client ID</param>
     /// <param name="timeSlot">Identifies the client and availability slot</param>
-    /// <returns>Ok if appointment was made</returns>
-    [HttpPost("{clientId}/appointment")]
-    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    /// <returns>Status 201 Created if appointment was made</returns>
+    [HttpPost("{clientId}/appointments")]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> CreateAppointment(long clientId, [FromBody] TimeSlot timeSlot)
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> CreateAppointment(
+        long clientId,
+        [FromBody] TimeSlot timeSlot)
     {
-        throw new NotImplementedException();
+        Create.Command command = new()
+        {
+            ClientId = clientId,
+            PsychologistId = timeSlot.PsychologistId,
+            Start = timeSlot.Start,
+            End = timeSlot.End
+        };
+
+        return await DispatchAndRespondAsync(command);
     }
 }

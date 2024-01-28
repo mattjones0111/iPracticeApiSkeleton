@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using iPractice.Api.Models;
+using iPractice.Contracts;
 using iPractice.DataAccess;
+using iPractice.Domain.Aggregates;
 using iPractice.Domain.Aspects.Validation;
 using iPractice.Domain.Pipeline;
 using MediatR;
@@ -13,14 +16,14 @@ namespace iPractice.Domain.Features.Client.Timeslots;
 
 public class Get
 {
-    public class Query : IRequest<Response<TimeSlot[]>>
+    public class Query : IRequest<Response>
     {
         public long ClientId { get; set; }
     }
 
     public class Validator : AbstractValidator<Query>
     {
-        private readonly ApplicationDbContext db;
+        readonly ApplicationDbContext db;
 
         public Validator(ApplicationDbContext db)
         {
@@ -40,11 +43,41 @@ public class Get
 
     public class Handler : IRequestHandler<Query, Response>
     {
-        public Task<Response> Handle(
+        readonly ApplicationDbContext db;
+
+        public Handler(ApplicationDbContext db)
+        {
+            this.db = db;
+        }
+
+        public async Task<Response> Handle(
             Query request,
             CancellationToken cancellationToken)
         {
-            return Task.FromResult(Response.Created());
+            DataAccess.Models.Client data = await db.Clients
+                .Include(x => x.Psychologists)
+                .ThenInclude(x => x.Availability)
+                .SingleOrDefaultAsync(
+                    x => x.Id == request.ClientId,
+                    cancellationToken);
+
+            List<TimeSlot> result = new();
+
+            foreach (DataAccess.Models.Psychologist p in data.Psychologists)
+            {
+                PsychologistAggregate aggregate = new(p);
+
+                result.AddRange(
+                    aggregate.GetAvailableTimeSlots()
+                        .Select(x => new TimeSlot
+                        {
+                            PsychologistId = p.Id,
+                            Start = x.From,
+                            End = x.To
+                        }));
+            }
+
+            return Response.WithPayload(result.ToArray());
         }
     }
 }

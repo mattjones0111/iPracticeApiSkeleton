@@ -64,7 +64,7 @@ public class Startup
         InitializeDatabase(app);
     }
 
-    private static void InitializeDatabase(IApplicationBuilder appBuilder)
+    static void InitializeDatabase(IApplicationBuilder appBuilder)
     {
         using (var scope = appBuilder.ApplicationServices.CreateScope())
         {

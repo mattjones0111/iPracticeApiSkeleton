@@ -24,7 +24,7 @@ public class Create
 
     public class Validator : AbstractValidator<Command>
     {
-        private readonly ApplicationDbContext db;
+        readonly ApplicationDbContext db;
 
         public Validator(ApplicationDbContext db)
         {
@@ -74,7 +74,7 @@ public class Create
 
     public class Handler : IRequestHandler<Command, Response>
     {
-        private readonly ApplicationDbContext db;
+        readonly ApplicationDbContext db;
 
         public Handler(ApplicationDbContext db)
         {

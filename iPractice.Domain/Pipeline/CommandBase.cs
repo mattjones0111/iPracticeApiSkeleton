@@ -1,39 +1,32 @@
 ﻿using System;
 using iPractice.Domain.Aspects.Validation;
-using MediatR;
 
 namespace iPractice.Domain.Pipeline;
 
-public abstract class BaseRequest : IRequest<Response>
-{
-}
-
-public class Response : IRequest
+public class Response
 {
     public static Response Invalid(ValidationError[] errors) => new(errors);
     public static Response Created() => new();
+    public static Response WithPayload(object payload) => new(payload);
 
     public ValidationError[] Errors { get; } = Array.Empty<ValidationError>();
 
     public bool IsCreated { get; }
 
-    protected Response()
+    public object Payload { get; }
+
+    Response()
     {
         IsCreated = true;
+    }
+
+    Response(object payload)
+    {
+        Payload = payload;
     }
 
     Response(ValidationError[] errors)
     {
         Errors = errors;
-    }
-}
-
-public class Response<TPayload> : Response
-{
-    public TPayload Payload { get; }
-
-    public Response(TPayload payload)
-    {
-        Payload = payload;
     }
 }

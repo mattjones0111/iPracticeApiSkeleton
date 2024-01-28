@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Client\Appointments\" />
     <Folder Include="Features\Client\Timeslots\" />
   </ItemGroup>
 

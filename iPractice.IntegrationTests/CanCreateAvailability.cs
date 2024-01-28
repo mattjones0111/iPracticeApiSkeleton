@@ -12,7 +12,7 @@ namespace iPractice.IntegrationTests;
 [Collection("Api collection")]
 public class CanCreateAvailability
 {
-    private readonly ApiFixture apiFixture;
+    readonly ApiFixture apiFixture;
 
     public CanCreateAvailability(ApiFixture apiFixture)
     {

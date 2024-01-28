@@ -15,6 +15,9 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Appointment>()
+            .HasKey(x => x.Id);
+
         modelBuilder.Entity<Availability>()
             .HasKey(x => x.Id);
 
@@ -24,6 +27,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Client>()
             .HasMany(p => p.Psychologists)
             .WithMany(b => b.Clients);
+
+        modelBuilder.Entity<Client>()
+            .HasMany(x => x.Appointments)
+            .WithOne(x => x.Client);
 
         modelBuilder.Entity<Psychologist>()
             .HasKey(psychologist => psychologist.Id);
@@ -35,5 +42,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Psychologist>()
             .HasMany(p => p.Clients)
             .WithMany(b => b.Psychologists);
+
+        modelBuilder.Entity<Psychologist>()
+            .HasMany(x => x.Appointments)
+            .WithOne(x => x.Psychologist);
     }
 }
