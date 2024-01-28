@@ -1,25 +1,24 @@
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
 namespace iPractice.IntegrationTests;
 
+[Collection("Api collection")]
 public class CanGetSwagger
 {
-    readonly HttpClient client;
+    private readonly ApiFixture apiFixture;
 
-    public CanGetSwagger()
+    public CanGetSwagger(ApiFixture apiFixture)
     {
-        ApiFixture fixture = new();
-        client = fixture.CreateClient();
+        this.apiFixture = apiFixture;
     }
 
     [Fact]
     public async Task Test()
     {
-        var response = await client.GetAsync("/swagger");
+        var response = await apiFixture.Client.GetAsync("/swagger");
 
         Assert.Multiple(() =>
         {

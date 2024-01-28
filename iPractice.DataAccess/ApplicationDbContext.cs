@@ -11,17 +11,12 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Psychologist>()
-            .HasKey(psychologist => psychologist.Id);
-
-        modelBuilder.Entity<Psychologist>()
-            .HasMany(p => p.Clients)
-            .WithMany(b => b.Psychologists);
+        modelBuilder.Entity<Availability>()
+            .HasKey(x => x.Id);
 
         modelBuilder.Entity<Client>()
             .HasKey(client => client.Id);
@@ -29,5 +24,16 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Client>()
             .HasMany(p => p.Psychologists)
             .WithMany(b => b.Clients);
+
+        modelBuilder.Entity<Psychologist>()
+            .HasKey(psychologist => psychologist.Id);
+
+        modelBuilder.Entity<Psychologist>()
+            .HasMany(x => x.Availability)
+            .WithOne(x => x.Psychologist);
+
+        modelBuilder.Entity<Psychologist>()
+            .HasMany(p => p.Clients)
+            .WithMany(b => b.Psychologists);
     }
 }

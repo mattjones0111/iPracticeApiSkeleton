@@ -1,22 +1,26 @@
-﻿using System;
+﻿using iPractice.Api.Models;
+using iPractice.Domain.Features.Client.Timeslots;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using iPractice.Api.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace iPractice.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ClientsController : ControllerBase
+public class ClientsController : MediatorDispatcherController
 {
-    private readonly ILogger _logger;
-        
-    public ClientsController(ILogger<ClientsController> logger)
+    public ClientsController(
+        IMediator mediator,
+        ILoggerFactory loggerFactory)
+        : base(
+            mediator,
+            loggerFactory.CreateLogger<MediatorDispatcherController>())
     {
-        _logger = logger;
     }
 
     /// <summary>
@@ -27,9 +31,11 @@ public class ClientsController : ControllerBase
     /// <returns>All time slots for the selected client</returns>
     [HttpGet("{clientId}/timeslots")]
     [ProducesResponseType(typeof(IEnumerable<TimeSlot>), (int)HttpStatusCode.OK)]
-    public ActionResult<IEnumerable<TimeSlot>> GetAvailableTimeSlots(long clientId)
+    public async Task<ActionResult> GetAvailableTimeSlots(long clientId)
     {
-        return Ok(Array.Empty<TimeSlot>());
+        Get.Query q = new Get.Query { ClientId = clientId };
+
+        return await DispatchAndRespondAsync(q);
     }
 
     /// <summary>

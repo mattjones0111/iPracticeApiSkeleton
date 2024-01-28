@@ -1,4 +1,5 @@
 using iPractice.DataAccess;
+using iPractice.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,8 @@ public class Startup
         });
 
         services.AddControllers();
+
+        services.AddDomain();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -57,5 +60,19 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        InitializeDatabase(app);
+    }
+
+    private static void InitializeDatabase(IApplicationBuilder appBuilder)
+    {
+        using (var scope = appBuilder.ApplicationServices.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            context.Database.EnsureCreatedAsync();
+
+            var seedData = new SeedData(context);
+            seedData.Seed();
+        }
     }
 }

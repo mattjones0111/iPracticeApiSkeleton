@@ -1,21 +1,23 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using iPractice.Api.Models;
+﻿using iPractice.Api.Models;
+using iPractice.Domain.Features.Psychologist.Availability;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace iPractice.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PsychologistsController : ControllerBase
+public class PsychologistsController : MediatorDispatcherController
 {
-    private readonly ILogger _logger;
-
-    public PsychologistsController(ILogger<PsychologistsController> logger)
+    public PsychologistsController(
+        IMediator mediator,
+        ILoggerFactory loggerFactory)
+        : base(mediator, loggerFactory.CreateLogger<MediatorDispatcherController>())
     {
-        _logger = logger;
     }
 
     [HttpGet]
@@ -31,13 +33,20 @@ public class PsychologistsController : ControllerBase
     /// <param name="availability">Availability</param>
     /// <returns>Ok if the availability was created</returns>
     [HttpPost("{psychologistId}/availability")]
-    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult> CreateAvailability(
         [FromRoute] long psychologistId,
         [FromBody] Availability availability)
     {
-        throw new NotImplementedException();
+        Create.Command command = new()
+        {
+            PsychologistId = psychologistId,
+            Start = availability.Start,
+            End = availability.End,
+        };
+
+        return await DispatchAndRespondAsync(command);
     }
 
     /// <summary>
